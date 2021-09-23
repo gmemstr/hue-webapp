@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hue Web Panel</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏳️‍🌈</text></svg>">
+    <style>
+      body {
+	  padding: 0;
+	  margin: 0 auto;
+      }
+      .lights {
+	  display: grid; 
+	  grid-template-columns: repeat(2, 1fr);
+	  grid-auto-rows: 200px;
+	  gap: 5px;
+      }
+      .light {
+	  border: none;
+	  color: black;
+	  font-size: 32px;
+
+	  -moz-transition: all .2s ease-in;
+	  -o-transition: all .2s ease-in;
+	  -webkit-transition: all .2s ease-in;
+	  transition: all .2s ease-in;
+      }
+      .light[data-state="true"] {
+	  background-color: yellow;
+      }
+      .light[data-state="false"] {
+	  background-color: black;
+	  color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="main"></main>
+
+    <script>
+      loadlights()
+
+      document.addEventListener('click', async e => {
+	  if (e.target && e.target.id == "l") {
+	      let toggle = !(e.target.dataset.state === 'true')
+	      await fetch(`/lights/${e.target.dataset.lightid}/state`, {
+		  method: "PUT",
+		  body: JSON.stringify({
+		      on: toggle
+		  })
+	      })
+	      e.target.dataset.state = toggle
+	  }
+      })
+      
+      async function loadlights() {
+	  res = await fetch("/lights")
+	  lights = await res.json()
+	  lights_html = ""
+	  for (const light in lights) {
+	      l = lights[light]
+	      lights_html += `<button id="l" class="light" data-lightid="${light}" data-state="${l.state.on}">${l.name}</button>`
+	  }
+	  html`<div class="lights">${lights_html}</div>`
+      }
+
+function html(strings, ...things) {
+  // Our "body", where we'll render stuff.
+  const body = document.getElementById("main")
+  let x = document.createRange().createContextualFragment(
+    strings.reduce(
+      (markup, string, index) => {
+        markup += string
+
+        if (things[index]) {
+          markup += things[index]
+        }
+
+        return markup
+      },
+      ''
+    )
+  )
+  body.innerHTML = ""
+  body.append(x)
+}
+    </script>
+  </body>
+</html>

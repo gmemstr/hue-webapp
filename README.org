@@ -1,0 +1,20 @@
+* Hue Webapp
+
+** What is this?
+
+I'm a bit tired of how slow the official Hue app is, so I decided to
+throw together a quick webapp for doing some of the simple functions
+required. So far this only toggles individual bulbs, but considering
+I'll be using this a fair amount myself more to come.
+
+** Setup
+
+While [[http://www.burgestrand.se/hue-api]] is still relatively useful,
+some changes were made to the bridge API, specifically around
+[[https://developers.meethue.com/important-whitelist-changes/][authenticating new "users"]]. It's easy to adapt - when [[http://www.burgestrand.se/hue-api/api/auth/registration/][registering an
+applicaton]], simply omit the username and note down the one the bridge
+sends back. Enter this into the web.py file, along with the IP address
+of your bridge. At some point I'll move these to environment variables,
+but it's 11:27PM at night and I want to sleep.
+
+Then just =./web.py= and visit [[localhost:8081]].
