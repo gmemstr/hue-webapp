@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-from urllib import request, parse
+from urllib import request
 import http.server
 import socketserver
-import json
+import os
 
-username = 'SEE-README'
-hub_ip = 'https://BRIDGE-IP-ADDRESS'
+username = os.getenv("HUE_USERNAME")
+hub_ip = os.getenv("HUE_HUB_ADDRESS")
 user_agent =  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+port = int(os.getenv("PORT"))
 
 def get_lights(params):
     response = request.urlopen(hub_ip + "/api/" + username + "/lights")
@@ -60,8 +61,8 @@ class RootHandler(http.server.SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    with socketserver.TCPServer(("0.0.0.0", 8081), RootHandler) as httpd:
-        print("serving server on port 8081")
+    with socketserver.TCPServer(("0.0.0.0", port), RootHandler) as httpd:
+        print(f"serving at port {port}")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
